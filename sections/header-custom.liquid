@@ -243,8 +243,10 @@
     --header-custom-accent: #c8ff00;
     --header-custom-menu-font: 'Monument Extended', 'Arial Black', sans-serif;
     --header-custom-menu-weight: 800;
-    --header-custom-menu-size: 1rem;
+    --header-custom-menu-size: {{ section.settings.menu_font_size }}px;
+    --header-custom-menu-size-mobile: {{ section.settings.menu_font_size_mobile }}px;
     --header-custom-menu-spacing: 0.02em;
+    --header-custom-logo-width: {{ section.settings.logo_width }}px;
     
     position: relative;
     z-index: var(--layer-overlay, 100);
@@ -336,13 +338,13 @@
   }
 
   .header-custom__logo-image {
-    max-height: 60px;
+    max-width: var(--header-custom-logo-width);
     width: auto;
     height: auto;
   }
 
   .header-custom__logo-image--mobile {
-    max-height: 50px;
+    max-width: calc(var(--header-custom-logo-width) * 0.8);
   }
 
   .header-custom__logo-wrapper {
@@ -558,13 +560,13 @@
     justify-content: center;
   }
 
+  .header-custom__menu--mobile .header-custom__menu-link {
+    font-size: var(--header-custom-menu-size-mobile);
+  }
+
   @media screen and (max-width: 480px) {
     .header-custom__menu--mobile {
       gap: 1.5rem;
-    }
-    
-    .header-custom__menu--mobile .header-custom__menu-link {
-      font-size: 1rem;
     }
   }
 
@@ -636,6 +638,26 @@
       "id": "menu",
       "label": "Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "default": 18,
+      "unit": "px",
+      "label": "Menu font size (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size_mobile",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px",
+      "label": "Menu font size (mobile)"
     },
     {
       "type": "header",
