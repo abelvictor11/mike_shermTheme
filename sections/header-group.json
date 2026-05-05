@@ -16,6 +16,7 @@
       "settings": {
         "logo": "shopify://shop_images/logo.webp",
         "logo_width": 250,
+        "logo_width_mobile": 80,
         "menu": "main-menu",
         "menu_font_size": 22,
         "menu_font_size_mobile": 14,
