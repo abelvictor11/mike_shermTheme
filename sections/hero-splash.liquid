@@ -185,7 +185,7 @@
 
     {%- comment -%} Image overlay (PNG on top of video/image) {%- endcomment -%}
     {% if section.settings.enable_image_overlay and section.settings.overlay_image != blank %}
-      <div class="hero-splash__image-overlay" style="--overlay-img-opacity: {{ section.settings.overlay_image_opacity | divided_by: 100.0 }};">
+      <div class="hero-splash__image-overlay" style="--overlay-img-opacity: {{ section.settings.overlay_image_opacity | divided_by: 100.0 }}; --overlay-img-y: {{ section.settings.overlay_image_vertical }}%; --overlay-img-y-mobile: {{ section.settings.overlay_image_vertical_mobile }}%;">
         {{
           section.settings.overlay_image
           | image_url: width: 3840
@@ -513,25 +513,31 @@
   width: 100%;
   height: 100%;
   object-fit: var(--hero-overlay-img-position, cover);
-  object-position: center;
+  object-position: center var(--overlay-img-y, 50%);
 }
 
 /* Position variants */
 .hero-splash[style*="--hero-overlay-img-position: top"] .hero-splash__image-overlay-img{
   object-fit: contain;
-  object-position: top center;
+  object-position: center var(--overlay-img-y, 0%);
 }
 .hero-splash[style*="--hero-overlay-img-position: center"] .hero-splash__image-overlay-img{
   object-fit: contain;
-  object-position: center center;
+  object-position: center var(--overlay-img-y, 50%);
 }
 .hero-splash[style*="--hero-overlay-img-position: bottom"] .hero-splash__image-overlay-img{
   object-fit: contain;
-  object-position: bottom center;
+  object-position: center var(--overlay-img-y, 100%);
 }
 
 .hero-splash__image-overlay-img--mobile{
   display: none;
+}
+
+@media (max-width: 749px) {
+  .hero-splash__image-overlay-img{
+    object-position: center var(--overlay-img-y-mobile, 50%);
+  }
 }
 
 /* Default background behavior (cover) */
@@ -1200,6 +1206,27 @@
       ]
     },
     { "type": "range", "id": "overlay_image_opacity", "label": "Overlay image opacity (%)", "min": 10, "max": 100, "step": 5, "default": 100 },
+    {
+      "type": "range",
+      "id": "overlay_image_vertical",
+      "label": "Overlay image vertical position (%)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%",
+      "info": "0% = top, 50% = center, 100% = bottom"
+    },
+    {
+      "type": "range",
+      "id": "overlay_image_vertical_mobile",
+      "label": "Overlay vertical position mobile (%)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
 
     { "type": "header", "content": "Text + buttons" },
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "New drop" },
