@@ -43,7 +43,7 @@
         "content_vertical": "center",
         "content_horizontal": "center",
         "padding_x": 24,
-        "padding_y": 24,
+        "padding_y": 80,
         "bottom_safe_area": 12,
         "enable_overlay": true,
         "overlay_opacity": 0,
