@@ -1,0 +1,102 @@
+/* Button Brush Style - Animated brush stroke effect */
+
+.button-brush {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 3rem;
+  font-family: 'Monument Extended', 'Arial Black', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #000000;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  overflow: visible;
+  z-index: 1;
+  transition: transform 0.2s ease;
+}
+
+.button-brush:hover {
+  transform: scale(1.02);
+}
+
+.button-brush__text {
+  position: relative;
+  z-index: 2;
+}
+
+/* SVG Brush stroke container */
+.button-brush__stroke {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 200%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.button-brush__stroke svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Brush stroke path animation */
+.button-brush__stroke path {
+  fill: none;
+  stroke: #000000;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Animation when in view */
+.button-brush.is-visible .button-brush__stroke path {
+  stroke-dashoffset: 0;
+}
+
+/* Multiple stroke layers for brush effect */
+.button-brush__stroke path:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.button-brush__stroke path:nth-child(2) {
+  transition-delay: 0.1s;
+  stroke-width: 2;
+  opacity: 0.7;
+}
+
+.button-brush__stroke path:nth-child(3) {
+  transition-delay: 0.15s;
+  stroke-width: 4;
+  opacity: 0.5;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 749px) {
+  .button-brush {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Hover animation - slight wobble */
+@keyframes brush-wobble {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(0.5deg); }
+  75% { transform: translate(-50%, -50%) rotate(-0.5deg); }
+}
+
+.button-brush:hover .button-brush__stroke {
+  animation: brush-wobble 0.3s ease-in-out;
+}

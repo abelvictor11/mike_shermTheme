@@ -10,27 +10,36 @@
 
 {% assign block_settings = block.settings %}
 
-<a
-  {% if link == blank %}
-    role="link"
-    aria-disabled="true"
-  {% else %}
-    href="{{ link }}"
-  {% endif %}
-  class="
-    size-style
-    {{ block_settings.style_class }}
-    {{ block_settings.style_class }}--{{ block.id }}
-  "
-  style="{% render 'size-style', settings: block_settings %}"
-  {%- if block_settings.open_in_new_tab -%}
-    target="_blank"
-    rel="noopener noreferrer"
-  {%- endif -%}
-  {{ block.shopify_attributes }}
->
-  {{ block_settings.label }}
-</a>
+{%- if block_settings.style_class == 'button-brush' -%}
+  {%- render 'button-brush', 
+    label: block_settings.label, 
+    link: link, 
+    new_tab: block_settings.open_in_new_tab,
+    block: block 
+  -%}
+{%- else -%}
+  <a
+    {% if link == blank %}
+      role="link"
+      aria-disabled="true"
+    {% else %}
+      href="{{ link }}"
+    {% endif %}
+    class="
+      size-style
+      {{ block_settings.style_class }}
+      {{ block_settings.style_class }}--{{ block.id }}
+    "
+    style="{% render 'size-style', settings: block_settings %}"
+    {%- if block_settings.open_in_new_tab -%}
+      target="_blank"
+      rel="noopener noreferrer"
+    {%- endif -%}
+    {{ block.shopify_attributes }}
+  >
+    {{ block_settings.label }}
+  </a>
+{%- endif -%}
 
 {% stylesheet %}
   .link {
