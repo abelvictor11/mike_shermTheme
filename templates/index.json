@@ -399,7 +399,7 @@
                     "label": "Shop now",
                     "link": "shopify://collections/all",
                     "open_in_new_tab": false,
-                    "style_class": "link",
+                    "style_class": "button-brush",
                     "width": "fit-content",
                     "custom_width": 100,
                     "width_mobile": "fit-content",
