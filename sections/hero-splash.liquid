@@ -21,6 +21,20 @@
     assign bg_type_mobile = bg_type
   endif
 
+  assign desktop_h = section.settings.section_height
+  assign hero_min_h = '100svh'
+  if desktop_h == 'full'
+    assign hero_min_h = '100svh'
+  elsif desktop_h == 'large'
+    assign hero_min_h = '80svh'
+  elsif desktop_h == 'medium'
+    assign hero_min_h = '60svh'
+  elsif desktop_h == 'custom'
+    assign hero_min_h = section.settings.custom_height | append: 'svh'
+  elsif desktop_h == 'fit'
+    assign hero_min_h = 'auto'
+  endif
+
   assign hero_min_h_mobile = hero_min_h
 
   if section.settings.custom_mobile_height
@@ -1002,6 +1016,12 @@
 @media (max-width: 749px){
   .hero-splash{
     min-height: calc(var(--hero-min-h-mobile, var(--hero-min-h)) - var(--hero-height-offset));
+    height: calc(var(--hero-min-h-mobile, var(--hero-min-h)) - var(--hero-height-offset));
+  }
+
+  .hero-splash__media{
+    min-height: inherit;
+    height: 100%;
   }
 }
 
