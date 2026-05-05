@@ -409,7 +409,7 @@
           "background": "#00000000",
           "foreground_heading": "#deef4f",
           "foreground": "#ffffff",
-          "primary": "#ffffff",
+          "primary": "#deef4f",
           "primary_hover": "#8c1e23",
           "border": "#e91e27",
           "shadow": "#000000",
