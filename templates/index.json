@@ -54,6 +54,8 @@
         "overlay_image_mobile": "shopify://shop_images/overlay-video.webp",
         "overlay_image_position": "contain",
         "overlay_image_opacity": 45,
+        "overlay_image_vertical": 50,
+        "overlay_image_vertical_mobile": 70,
         "kicker": "",
         "heading": "",
         "subheading": "",
