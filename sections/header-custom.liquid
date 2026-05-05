@@ -251,6 +251,12 @@
     position: relative;
     z-index: var(--layer-overlay, 100);
     width: 100%;
+    overflow-x: hidden;
+  }
+
+  .header-custom-section {
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* Transparent mode for homepage - absolute positioning over hero */
@@ -272,7 +278,7 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .header-custom__bg-image {
