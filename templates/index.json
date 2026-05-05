@@ -32,7 +32,7 @@
       "settings": {
         "bg_type": "video",
         "bg_video": "shopify://files/videos/herovideo-mike.mp4",
-        "custom_mobile_media": false,
+        "custom_mobile_media": true,
         "bg_type_mobile": "video",
         "bg_video_mobile": "shopify://files/videos/herovideo-mike.mp4",
         "section_height": "fit",
