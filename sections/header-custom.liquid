@@ -276,8 +276,27 @@
   .header-custom__bg-image {
     width: 100%;
     height: auto;
-    object-fit: contain;
-    object-position: center top;
+    object-fit: cover;
+    object-position: center bottom;
+    max-height: 140px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .header-custom__bg-image {
+      max-height: 160px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .header-custom__bg-image {
+      max-height: 180px;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .header-custom__bg-image {
+      max-height: 200px;
+    }
   }
 
   .header-custom__container {
