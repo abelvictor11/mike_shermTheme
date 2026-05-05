@@ -1,0 +1,1205 @@
+{% comment %}
+  Section: Hero Splash (Horizon)
+  - Full-screen splash hero
+  - Background: image OR video (with mobile overrides)
+  - Copy + up to 2 buttons (alignment controls)
+  - Bottom-left: Social media icons (BLOCK = social_media) (inline SVGs — no snippets)
+  - Bottom-right: Newsletter signup (native Shopify customer form)
+
+  Updates included:
+  - Heading font size controls (desktop + mobile)
+  - Text protection: adjustable text shadow + optional “readability glow” behind copy
+  - Button fix: normalize <a.btn> rendering + optional custom BG / text / radius for primary + secondary
+  - Newsletter text protection: shadow applies to title, placeholder, fineprint
+  - Hero height: adds “Fit to image” option (no crop, contain)
+{% endcomment %}
+
+{% liquid
+  assign bg_type = section.settings.bg_type
+  assign bg_type_mobile = section.settings.bg_type_mobile
+  if section.settings.custom_mobile_media == false
+    assign bg_type_mobile = bg_type
+  endif
+
+  assign hero_min_h_mobile = hero_min_h
+
+  if section.settings.custom_mobile_height
+    assign mobile_h = section.settings.section_height_mobile
+
+    if mobile_h == 'full'
+      assign hero_min_h_mobile = '100svh'
+    elsif mobile_h == 'large'
+      assign hero_min_h_mobile = '80svh'
+    elsif mobile_h == 'medium'
+      assign hero_min_h_mobile = '60svh'
+    elsif mobile_h == 'custom'
+      assign hero_min_h_mobile = section.settings.custom_height_mobile | append: 'svh'
+    elsif mobile_h == 'fit'
+      assign hero_min_h_mobile = 'auto'
+    endif
+  endif
+
+  assign is_fit_to_image = false
+  if section.settings.section_height == 'fit'
+    assign is_fit_to_image = true
+  endif
+
+  assign has_bg_image = false
+  if section.settings.bg_image != blank and bg_type == 'image'
+    assign has_bg_image = true
+  endif
+
+  assign has_bg_video = false
+  if section.settings.bg_video != blank and bg_type == 'video'
+    assign has_bg_video = true
+  endif
+
+  assign has_bg_image_mobile = false
+  if section.settings.bg_image_mobile != blank and bg_type_mobile == 'image'
+    assign has_bg_image_mobile = true
+  endif
+
+  assign has_bg_video_mobile = false
+  if section.settings.bg_video_mobile != blank and bg_type_mobile == 'video'
+    assign has_bg_video_mobile = true
+  endif
+
+  assign fetch_priority = 'auto'
+  if section.index == 1
+    assign fetch_priority = 'high'
+  endif
+
+  assign should_preload = false
+  if section.index == 1
+    assign should_preload = true
+  endif
+
+  assign newsletter_form_id = 'HeroSplashNewsletter-' | append: section.id
+
+  assign primary_style = section.settings.primary_button_style
+  if primary_style == blank
+    assign primary_style = 'btn--primary'
+  endif
+
+  assign secondary_style = section.settings.secondary_button_style
+  if secondary_style == blank
+    assign secondary_style = 'btn--secondary'
+  endif
+
+  assign newsletter_style = section.settings.newsletter_button_style
+  if newsletter_style == blank
+    assign newsletter_style = 'btn--primary'
+  endif
+
+  assign has_social_block = false
+  for block in section.blocks
+    if block.type == 'social_media'
+      assign has_social_block = true
+      break
+    endif
+  endfor
+
+  assign use_primary_custom = section.settings.primary_custom_enable
+  assign use_secondary_custom = section.settings.secondary_custom_enable
+%}
+
+<section
+  id="HeroSplash-{{ section.id }}"
+  class="hero-splash color-{{ section.settings.color_scheme }}{% if is_fit_to_image %} hero-splash--fit{% endif %}"
+  style="
+    --hero-min-h: {{ hero_min_h }};
+    --hero-pad-x: {{ section.settings.padding_x }}px;
+    --hero-pad-y: {{ section.settings.padding_y }}px;
+
+    --hero-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --hero-overlay-color: {{ section.settings.overlay_color }};
+
+    --hero-text: {{ section.settings.text_color }};
+    --hero-heading: {{ section.settings.heading_color }};
+    --hero-kicker: {{ section.settings.kicker_color }};
+    --hero-subheading: {{ section.settings.subheading_color }};
+
+    --hero-h1-size: {{ section.settings.heading_size_desktop }}px;
+    --hero-h1-size-m: {{ section.settings.heading_size_mobile }}px;
+
+    --hero-shadow-opacity: {{ section.settings.text_shadow_opacity | divided_by: 100.0 }};
+    --hero-shadow-blur: {{ section.settings.text_shadow_blur }}px;
+    --hero-shadow-y: {{ section.settings.text_shadow_y }}px;
+
+    --hero-glow-opacity: {{ section.settings.text_glow_opacity | divided_by: 100.0 }};
+
+    --hero-ui: {{ section.settings.ui_color }};
+    --hero-ui-border: {{ section.settings.ui_border_color }};
+    --hero-ui-bg: {{ section.settings.ui_bg_color }};
+    --hero-ui-bg-opacity: {{ section.settings.ui_bg_opacity | divided_by: 100.0 }};
+    --hero-ui-radius: {{ section.settings.ui_radius }}px;
+    --hero-ui-gap: {{ section.settings.ui_gap }}px;
+    --hero-min-h-mobile: {{ hero_min_h_mobile }};
+
+    --hero-social: {{ section.settings.social_icon_color }};
+    --hero-social-hover: {{ section.settings.social_icon_hover_color }};
+    --hero-social-bg: {{ section.settings.social_icon_bg }};
+    --hero-social-bg-opacity: {{ section.settings.social_icon_bg_opacity | divided_by: 100.0 }};
+    --hero-social-ring: {{ section.settings.social_icon_ring_color }};
+
+    --hero-news-btn-bg: {{ section.settings.newsletter_button_bg }};
+    --hero-news-btn-text: {{ section.settings.newsletter_button_text }};
+    --hero-news-btn-ring: {{ section.settings.newsletter_button_ring }};
+    --hero-news-btn-radius: {{ section.settings.newsletter_button_radius }}px;
+
+    --hero-btn-primary-bg: {{ section.settings.primary_custom_bg }};
+    --hero-btn-primary-text: {{ section.settings.primary_custom_text }};
+    --hero-btn-primary-radius: {{ section.settings.primary_custom_radius }}px;
+    --hero-btn-primary-border: {{ section.settings.primary_custom_border }};
+
+    --hero-btn-secondary-bg: {{ section.settings.secondary_custom_bg }};
+    --hero-btn-secondary-text: {{ section.settings.secondary_custom_text }};
+    --hero-btn-secondary-radius: {{ section.settings.secondary_custom_radius }}px;
+    --hero-btn-secondary-border: {{ section.settings.secondary_custom_border }};
+
+    --hero-bottom-safe: {{ section.settings.bottom_safe_area }}px;
+  "
+  {% if request.visual_preview_mode %}
+    data-shopify-visual-preview
+  {% endif %}
+>
+  <div class="hero-splash__media" aria-hidden="true">
+    {% if section.settings.enable_overlay %}
+      <div class="hero-splash__overlay"></div>
+    {% endif %}
+
+    {%- comment -%} Desktop background {%- endcomment -%}
+    {% if has_bg_video %}
+      <div class="hero-splash__video hero-splash__video--desktop">
+        {{
+          section.settings.bg_video
+          | video_tag:
+            autoplay: true,
+            loop: true,
+            muted: true,
+            controls: false,
+            playsinline: true,
+            class: 'hero-splash__video-el'
+        }}
+      </div>
+    {% elsif has_bg_image %}
+      {{
+        section.settings.bg_image
+        | image_url: width: 3840
+        | image_tag:
+          width: section.settings.bg_image.width,
+          height: section.settings.bg_image.height,
+          alt: section.settings.bg_image.alt,
+          class: 'hero-splash__image hero-splash__image--desktop',
+          sizes: '100vw',
+          widths: '832,1200,1600,1920,2560,3840',
+          fetchpriority: fetch_priority,
+          preload: should_preload
+      }}
+    {% else %}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero-splash__image hero-splash__image--desktop' }}
+    {% endif %}
+
+    {%- comment -%} Mobile override background {%- endcomment -%}
+    {% if section.settings.custom_mobile_media %}
+      {% if has_bg_video_mobile %}
+        <div class="hero-splash__video hero-splash__video--mobile">
+          {{
+            section.settings.bg_video_mobile
+            | video_tag:
+              autoplay: true,
+              loop: true,
+              muted: true,
+              controls: false,
+              playsinline: true,
+              class: 'hero-splash__video-el'
+          }}
+        </div>
+      {% elsif has_bg_image_mobile %}
+        {{
+          section.settings.bg_image_mobile
+          | image_url: width: 1800
+          | image_tag:
+            width: section.settings.bg_image_mobile.width,
+            height: section.settings.bg_image_mobile.height,
+            alt: section.settings.bg_image_mobile.alt,
+            class: 'hero-splash__image hero-splash__image--mobile',
+            sizes: '100vw',
+            widths: '416,600,800,1200,1600,1800',
+            fetchpriority: fetch_priority
+        }}
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="hero-splash__content{% unless is_fit_to_image %} section section--full-width{% endunless %}">
+    <div class="hero-splash__inner {{ section.settings.section_width }}">
+      <div
+        class="
+          hero-splash__center
+          hero-align-v--{{ section.settings.content_vertical }}
+          hero-align-h--{{ section.settings.content_horizontal }}
+          {% if section.settings.enable_text_glow %}hero-splash__center--glow{% endif %}
+        "
+      >
+        <div class="hero-splash__copy">
+          {% if section.settings.kicker != blank %}
+            <div class="hero-splash__kicker">{{ section.settings.kicker }}</div>
+          {% endif %}
+
+          {% if section.settings.heading != blank %}
+            <h1 class="hero-splash__heading">{{ section.settings.heading }}</h1>
+          {% endif %}
+
+          {% if section.settings.subheading != blank %}
+            <div class="hero-splash__subheading">{{ section.settings.subheading }}</div>
+          {% endif %}
+
+          {% if section.settings.primary_label != blank and section.settings.primary_link != blank %}
+            <div class="hero-splash__actions">
+              <a
+                class="btn {{ primary_style }} hero-splash__btn {% if use_primary_custom %}hero-splash__btn--primary-custom{% endif %}"
+                href="{{ section.settings.primary_link }}"
+                {% if section.settings.primary_new_tab %}target="_blank" rel="noopener"{% endif %}
+              >
+                {{ section.settings.primary_label }}
+              </a>
+
+              {% if section.settings.secondary_label != blank and section.settings.secondary_link != blank %}
+                <a
+                  class="btn {{ secondary_style }} hero-splash__btn {% if use_secondary_custom %}hero-splash__btn--secondary-custom{% endif %}"
+                  href="{{ section.settings.secondary_link }}"
+                  {% if section.settings.secondary_new_tab %}target="_blank" rel="noopener"{% endif %}
+                >
+                  {{ section.settings.secondary_label }}
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <footer class="hero-splash__bottom">
+        {% if section.settings.show_social and has_social_block %}
+          <div class="hero-splash__social" aria-label="Social media links">
+            {% for block in section.blocks %}
+              {% if block.type == 'social_media' %}
+                <div class="hero-splash__social-block" {{ block.shopify_attributes }}>
+                  <ul class="hero-splash__social-list" role="list">
+                    {% if block.settings.facebook != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
+                          <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                            <path d="M95 20.001C95 12.119 87.884 5 80 5H20C12.116 5 5 12.119 5 20.001v59.998C5 87.881 12.116 95 20.001 95H50V61H39V46h11v-5.844C50 30.077 57.568 21 66.875 21H79v15H66.875C65.548 36 64 37.611 64 40.024V46h15v15H64v34h16c7.884 0 15-7.119 15-15.001V20.001z"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    {% if block.settings.instagram != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
+                          <svg viewBox="0 0 40 39" aria-hidden="true" focusable="false">
+                            <path d="M33.212 38.651H7.015c-3.459 0-6.273-2.808-6.273-6.26V6.26C.742 2.808 3.556 0 7.015 0h26.197c3.458 0 6.272 2.808 6.272 6.26v26.132c0 3.452-2.814 6.259-6.272 6.259ZM13.742 8h13a5 5 0 0 1 5 5v13a5 5 0 0 1-5 5h-13a5 5 0 0 1-5-5V13a5 5 0 0 1 5-5Zm0-3a8 8 0 0 0-8 8v13a8 8 0 0 0 8 8h13a8 8 0 0 0 8-8V13a8 8 0 0 0-8-8h-13Zm6.5 21.5a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm0-3a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.5-9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    {% if block.settings.youtube != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.youtube }}" target="_blank" rel="noopener" aria-label="YouTube">
+                          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <path fill-rule="evenodd" d="M15.32 4.06c-.434-.772-.905-.914-1.864-.968C12.498 3.027 10.089 3 8.002 3c-2.091 0-4.501.027-5.458.091-.957.055-1.429.196-1.867.969C.23 4.831 0 6.159 0 8.497v.008c0 2.328.23 3.666.677 4.429.438.772.909.912 1.866.977.958.056 3.368.089 5.459.089 2.087 0 4.496-.033 5.455-.088.959-.065 1.43-.205 1.864-.977.451-.763.679-2.101.679-4.429v-.008c0-2.339-.228-3.667-.68-4.438zM6 11.5v-6l5 3-5 3z" clip-rule="evenodd"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    {% if block.settings.tiktok != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.tiktok }}" target="_blank" rel="noopener" aria-label="TikTok">
+                          <svg viewBox="0 0 33.867 33.867" aria-hidden="true" focusable="false">
+                            <path d="m22.913 1.057-5.29.001v21.836a4.614 4.614 0 0 1-2.859 4.276 4.611 4.611 0 0 1-5.043-1.003 4.615 4.615 0 0 1-1.004-5.046 4.612 4.612 0 0 1 4.276-2.856h1.711v-5.29h-1.71A9.934 9.934 0 0 0 3.83 19.1a9.934 9.934 0 0 0 2.15 10.81 9.935 9.935 0 0 0 10.81 2.149 9.934 9.934 0 0 0 6.123-9.164V10.786c1.44.858 3.14 1.488 5.233 1.488h2.644V6.983h-2.644c-2.975 0-3.781-1.21-4.487-2.745-.706-1.534-.746-3.181-.746-3.181Z"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    {% if block.settings.x != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.x }}" target="_blank" rel="noopener" aria-label="X (Twitter)">
+                          <svg viewBox="0 0 72 72" aria-hidden="true" focusable="false">
+                            <path d="M42.5,31.2L66,6h-6L39.8,27.6L24,6H4l24.6,33.6L4,66h6l21.3-22.8L48,66h20L42.5,31.2z M12.9,10h8l38.1,52h-8L12.9,10z"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    {% if block.settings.spotify != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.spotify }}" target="_blank" rel="noopener" aria-label="Spotify">
+                          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                            <path d="M8 0C3.589 0 0 3.589 0 8s3.589 8 8 8 8-3.589 8-8-3.589-8-8-8zm3.67 11.548a.499.499 0 0 1-.696.122c-1.875-1.318-4.994-1.391-7.1-.9a.5.5 0 0 1-.226-.975c2.315-.536 5.775-.438 7.9 1.057a.5.5 0 0 1 .122.696zm.976-1.951a.5.5 0 0 1-.698.114C9.773 8.15 7.101 7.762 3.535 8.49a.5.5 0 1 1-.201-.98c3.857-.787 6.779-.347 9.197 1.388a.502.502 0 0 1 .115.699zm.986-2.62a.5.5 0 0 1-.695.133c-2.757-1.871-6.948-1.88-9.661-.92a.5.5 0 1 1-.333-.944C5.894 4.203 10.467 4.225 13.5 6.282a.502.502 0 0 1 .132.695z"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+
+                    {% if block.settings.apple_music != blank %}
+                      <li>
+                        <a class="hero-splash__icon" href="{{ block.settings.apple_music }}" target="_blank" rel="noopener" aria-label="Apple Music">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M20.7 16.8c-.3-.1-2.5-1.1-2.5-3.9 0-2.2 1.5-3.3 2.1-3.7.1-.1.2-.2.2-.3 0-.1 0-.3-.1-.4-1.4-2.1-3.6-2.3-4.2-2.3-1.1-.1-2.2.3-3 .6-.4.2-.8.3-1.1.3-.3 0-.7-.2-1.1-.3-.7-.3-1.5-.6-2.4-.6-1.9 0-3.8 1.2-4.8 2.9-1.8 3.5-.6 8.5 1.4 11.5.8 1.2 2 2.9 3.7 2.9H9c.7 0 1.2-.2 1.7-.5.5-.2 1-.4 1.7-.4s1.2.2 1.6.4c.5.2 1 .4 1.8.4 1.7 0 2.8-1.6 3.6-2.9.9-1.3 1.4-2.7 1.5-3.2.2-.1.1-.4-.2-.5zM14.9 3.3c.7-.8 1.1-1.8 1.1-2.8-.9.2-1.9.8-2.5 1.5-.5.6-1.1 1.7-1.1 2.8.9-.1 1.9-.7 2.5-1.5z"/>
+                          </svg>
+                        </a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_newsletter %}
+          <div class="hero-splash__newsletter" aria-label="Email signup">
+            {% if section.settings.newsletter_heading != blank %}
+              <div class="hero-splash__newsletter-title">{{ section.settings.newsletter_heading }}</div>
+            {% endif %}
+
+            {% form 'customer', id: newsletter_form_id, class: 'hero-splash__form' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+
+              <div class="hero-splash__form-row">
+                <label class="visually-hidden" for="HeroSplashEmail-{{ section.id }}">{{ section.settings.email_placeholder }}</label>
+
+                <input
+                  id="HeroSplashEmail-{{ section.id }}"
+                  class="hero-splash__input"
+                  type="email"
+                  name="contact[email]"
+                  autocomplete="email"
+                  placeholder="{{ section.settings.email_placeholder }}"
+                  required
+                >
+
+                <button
+                  class="btn {{ newsletter_style }} hero-splash__submit{% if section.settings.newsletter_force_bg %} hero-splash__submit--force{% endif %}"
+                  type="submit"
+                  name="commit"
+                >
+                  {{ section.settings.email_button_label }}
+                </button>
+              </div>
+
+              {% if form.posted_successfully? %}
+                <p class="hero-splash__note">{{ section.settings.success_message }}</p>
+              {% elsif form.errors %}
+                <p class="hero-splash__note hero-splash__note--error">{{ form.errors | default_errors }}</p>
+              {% endif %}
+
+              {% if section.settings.privacy_text != blank %}
+                <p class="hero-splash__fineprint">{{ section.settings.privacy_text }}</p>
+              {% endif %}
+            {% endform %}
+          </div>
+        {% endif %}
+      </footer>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+.hero-splash{
+  position:relative;
+  color: var(--hero-text);
+  --hero-height-offset: var(--header-group-height, 0px);
+  min-height: calc(var(--hero-min-h) - var(--hero-height-offset));
+}
+
+.hero-splash__media{ position:absolute; inset:0; overflow:hidden; z-index:0; }
+
+.hero-splash__overlay{
+  position:absolute;
+  inset:0;
+  background: color-mix(in srgb, var(--hero-overlay-color) calc(var(--hero-overlay) * 100%), transparent);
+  z-index:2;
+  pointer-events:none;
+}
+
+/* Default background behavior (cover) */
+.hero-splash__image,
+.hero-splash__video-el{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:1;
+}
+
+.hero-splash__image--mobile,
+.hero-splash__video--mobile{ display:none; }
+
+.hero-splash__content{ position:relative; z-index:3; min-height: inherit; display:flex; }
+
+.hero-splash__inner{
+  width:100%;
+  padding: var(--hero-pad-y) var(--hero-pad-x);
+  min-height: inherit;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------------- Fit to image mode ---------------- */
+.hero-splash--fit{
+  min-height: auto;
+}
+
+.hero-splash--fit .hero-splash__media{
+  position: relative;
+  inset: auto;
+  overflow: visible;
+}
+
+.hero-splash--fit .hero-splash__overlay{
+  position: absolute;
+  inset: 0;
+}
+
+/* Make media participate in layout (no crop) */
+.hero-splash--fit .hero-splash__image,
+.hero-splash--fit .hero-splash__video-el{
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Content overlays media in fit mode */
+.hero-splash--fit .hero-splash__content{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  min-height: 100%;
+}
+
+.hero-splash--fit .hero-splash__inner{
+  min-height: 100%;
+}
+
+/* Fit mode: content overlays media reliably */
+.hero-splash--fit { position: relative; }
+
+.hero-splash--fit .hero-splash__content{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  min-height: 100%;
+  margin: 0;          /* important if theme adds margins */
+  padding: 0;         /* important if theme adds padding */
+  background: none;   /* prevents a “white block” below */
+}
+
+.hero-splash--fit .hero-splash__inner{
+  min-height: 100%;
+  height: 100%;
+}
+
+.hero-splash--fit .hero-splash__bottom{
+  margin-top: auto;
+}
+
+
+/* ---------------- Alignment controls ---------------- */
+.hero-splash__center{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  padding: 20px 0;
+  min-height: inherit;
+}
+
+.hero-align-v--top{ justify-content:flex-start; }
+.hero-align-v--center{ justify-content:center; }
+.hero-align-v--bottom{ justify-content:flex-end; }
+
+.hero-align-h--left{ align-items:flex-start; text-align:left; }
+.hero-align-h--center{ align-items:center; text-align:center; }
+.hero-align-h--right{ align-items:flex-end; text-align:right; }
+
+.hero-align-h--left .hero-splash__actions{ justify-content:flex-start; }
+.hero-align-h--center .hero-splash__actions{ justify-content:center; }
+.hero-align-h--right .hero-splash__actions{ justify-content:flex-end; }
+
+/* ---------------- Text protection ---------------- */
+.hero-splash__copy{
+  position: relative;
+  z-index: 1;
+  max-width: min(74rem, 100%);
+}
+
+.hero-splash__kicker,
+.hero-splash__heading,
+.hero-splash__subheading{
+  text-shadow:
+    0 var(--hero-shadow-y) var(--hero-shadow-blur) rgba(0,0,0,var(--hero-shadow-opacity)),
+    0 0 calc(var(--hero-shadow-blur) * .6) rgba(0,0,0,calc(var(--hero-shadow-opacity) * .65));
+}
+
+.hero-splash__center--glow .hero-splash__copy::before{
+  content:"";
+  position:absolute;
+  inset: -18px -22px -20px -22px;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(
+      60% 55% at 50% 42%,
+      rgba(0,0,0,var(--hero-glow-opacity)) 0%,
+      rgba(0,0,0,calc(var(--hero-glow-opacity) * .55)) 42%,
+      rgba(0,0,0,0) 75%
+    );
+  filter: blur(2px);
+}
+
+/* ---------------- Typography colors + sizing ---------------- */
+.hero-splash__kicker{
+  color: var(--hero-kicker, var(--hero-ui));
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: .85rem;
+  opacity: .98;
+}
+
+.hero-splash__heading{
+  color: var(--hero-heading, var(--hero-text));
+  margin:0;
+  line-height: .93;
+  font-size: var(--hero-h1-size);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.hero-splash__subheading{
+  color: var(--hero-subheading, var(--hero-text));
+  opacity:.95;
+  max-width: 44rem;
+  margin: 0;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  text-wrap: pretty;
+}
+
+/* ---------------- Actions + Custom buttons ---------------- */
+.hero-splash__actions{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* Normalize theme .btn styles on <a> */
+.hero-splash__btn.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 1;
+  min-height: 44px;
+  padding: 12px 18px;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero-splash__btn{
+  position: relative;
+  transform: translateY(0);
+  transition:
+    transform 160ms cubic-bezier(0.2,0,0,1),
+    box-shadow 160ms ease,
+    filter 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.hero-splash__btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.24);
+}
+
+.hero-splash__btn:active{
+  transform: translateY(0);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.20);
+}
+
+.hero-splash__btn:focus-visible{
+  outline: none;
+  box-shadow:
+    0 14px 36px rgba(0,0,0,0.24),
+    0 0 0 7px rgba(255,255,255,0.18);
+}
+
+/* Primary custom */
+.hero-splash__btn--primary-custom{
+  background: var(--hero-btn-primary-bg) !important;
+  color: var(--hero-btn-primary-text) !important;
+  border-radius: var(--hero-btn-primary-radius) !important;
+  border: 1px solid color-mix(in srgb, var(--hero-btn-primary-border) 70%, transparent) !important;
+}
+
+/* Secondary custom */
+.hero-splash__btn--secondary-custom{
+  background: var(--hero-btn-secondary-bg) !important;
+  color: var(--hero-btn-secondary-text) !important;
+  border-radius: var(--hero-btn-secondary-radius) !important;
+  border: 1px solid color-mix(in srgb, var(--hero-btn-secondary-border) 70%, transparent) !important;
+}
+
+/* ---------------- Bottom UI ---------------- */
+.hero-splash__bottom{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 16px;
+  padding-bottom: calc(var(--hero-bottom-safe) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------------- Social icons (premium) ---------------- */
+.hero-splash__social-list{
+  display:flex;
+  gap: 12px;
+  align-items:center;
+  margin:0;
+  padding:0;
+  list-style:none;
+  flex-wrap: wrap;
+}
+
+.hero-splash__icon{
+  --_size: 42px;
+  width: var(--_size);
+  height: var(--_size);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 999px;
+  color: var(--hero-social);
+  text-decoration:none;
+
+  background: color-mix(in srgb, var(--hero-social-bg) calc(var(--hero-social-bg-opacity) * 100%), transparent);
+  border: 1px solid color-mix(in srgb, var(--hero-social-ring) 55%, transparent);
+
+  transform: translateY(0) scale(1);
+  transition:
+    transform 160ms cubic-bezier(0.2, 0, 0, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+  box-shadow:
+    0 0 0 rgba(0,0,0,0),
+    0 0 0 rgba(0,0,0,0);
+}
+
+.hero-splash__icon:hover{
+  color: var(--hero-social-hover);
+  transform: translateY(-2px) scale(1.02);
+  border-color: color-mix(in srgb, var(--hero-social-ring) 85%, transparent);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.22),
+    0 0 0 6px color-mix(in srgb, var(--hero-social-ring) 18%, transparent);
+}
+
+.hero-splash__icon:active{
+  transform: translateY(0) scale(0.99);
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.18),
+    0 0 0 5px color-mix(in srgb, var(--hero-social-ring) 14%, transparent);
+}
+
+.hero-splash__icon:focus-visible{
+  outline: none;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.22),
+    0 0 0 7px color-mix(in srgb, var(--hero-social-ring) 28%, transparent);
+}
+
+.hero-splash__icon svg{
+  width: 20px;
+  height: 20px;
+  display:block;
+}
+.hero-splash__icon svg *{ fill: currentColor; }
+
+/* ---------------- Newsletter ---------------- */
+.hero-splash__newsletter{
+  max-width: min(520px, 52vw);
+  width: 100%;
+  color: var(--hero-ui);
+}
+
+/* newsletter title already has shadow; extend protection to all newsletter text */
+.hero-splash__newsletter,
+.hero-splash__newsletter *{
+  text-shadow:
+    0 var(--hero-shadow-y) var(--hero-shadow-blur) rgba(0,0,0,var(--hero-shadow-opacity)),
+    0 0 calc(var(--hero-shadow-blur) * .5) rgba(0,0,0,calc(var(--hero-shadow-opacity) * .55));
+}
+
+/* don’t shadow the glass container chrome */
+.hero-splash__form-row{
+  display:flex;
+  gap: 10px;
+  align-items:stretch;
+  background: color-mix(in srgb, var(--hero-ui-bg) calc(var(--hero-ui-bg-opacity) * 100%), transparent);
+  border: 1px solid var(--hero-ui-border);
+  border-radius: var(--hero-ui-radius);
+  padding: 8px;
+  backdrop-filter: blur(10px);
+  text-shadow: none;
+}
+
+.hero-splash__newsletter-title{
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: .02em;
+}
+
+/* Input */
+.hero-splash__input{
+  flex: 1;
+  min-width: 160px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--hero-ui);
+  padding: 10px 10px;
+
+  /* ensure readable on noisy images */
+  text-shadow:
+    0 var(--hero-shadow-y) var(--hero-shadow-blur) rgba(0,0,0,var(--hero-shadow-opacity));
+}
+.hero-splash__input::placeholder{
+  color: color-mix(in srgb, var(--hero-ui) 70%, transparent);
+  text-shadow:
+    0 var(--hero-shadow-y) var(--hero-shadow-blur) rgba(0,0,0,var(--hero-shadow-opacity));
+}
+
+/* Submit button upgrade */
+.hero-splash__submit{
+  border-radius: var(--hero-news-btn-radius);
+  padding-left: 16px;
+  padding-right: 16px;
+  white-space: nowrap;
+}
+
+/* Force a clean premium button (use this if the theme style renders “transparent”) */
+.hero-splash__submit--force{
+  background: var(--hero-news-btn-bg) !important;
+  color: var(--hero-news-btn-text) !important;
+  border: 1px solid color-mix(in srgb, var(--hero-news-btn-ring) 60%, transparent) !important;
+  border-radius: var(--hero-news-btn-radius) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  transition:
+    transform 160ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+.hero-splash__submit--force:hover{
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 36px rgba(0,0,0,0.24),
+    0 0 0 6px color-mix(in srgb, var(--hero-news-btn-ring) 18%, transparent);
+}
+.hero-splash__submit--force:active{
+  transform: translateY(0);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.20),
+    0 0 0 5px color-mix(in srgb, var(--hero-news-btn-ring) 14%, transparent);
+}
+.hero-splash__submit--force:focus-visible{
+  outline:none;
+  box-shadow:
+    0 14px 36px rgba(0,0,0,0.24),
+    0 0 0 7px color-mix(in srgb, var(--hero-news-btn-ring) 26%, transparent);
+}
+
+.hero-splash__note{ margin-top: 10px; font-size: .9rem; opacity: .95; }
+.hero-splash__note--error{ opacity: 1; }
+
+.hero-splash__fineprint{ margin-top: 10px; font-size: .78rem; opacity: .9; max-width: 46ch; }
+
+/* Mobile sizing */
+@media (max-width: 749px){
+  .hero-splash__heading{ font-size: var(--hero-h1-size-m); }
+
+  .hero-splash__bottom{
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 14px;
+  }
+  .hero-splash__newsletter{ max-width: 100%; }
+
+  .hero-splash__image--desktop,
+  .hero-splash__video--desktop{ display:none; }
+
+  .hero-splash__image--mobile,
+  .hero-splash__video--mobile{ display:block; }
+}
+
+/* --- HARD FORCE: overlay content on top of the fit-to-image media --- */
+.hero-splash--fit{
+  position: relative;
+}
+
+.hero-splash--fit .hero-splash__content{
+  position: absolute !important;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 3 !important;
+  min-height: 100% !important;
+  display: flex;
+}
+
+/* Make the inner column stretch to the media height */
+.hero-splash--fit .hero-splash__inner{
+  min-height: 100% !important;
+  height: 100%;
+}
+
+/* Keep bottom UI pinned to bottom of the image */
+.hero-splash--fit .hero-splash__bottom{
+  margin-top: auto;
+  padding-bottom: calc(var(--hero-bottom-safe) + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 749px){
+  .hero-splash{
+    min-height: calc(var(--hero-min-h-mobile, var(--hero-min-h)) - var(--hero-height-offset));
+  }
+}
+
+/* FIX: prevent center from forcing full height (it was pushing footer outside section) */
+.hero-splash__center{
+  min-height: 0 !important; /* override min-height: inherit */
+}
+
+/* FIX: keep bottom UI pinned inside the hero */
+.hero-splash__bottom{
+  margin-top: auto;
+}
+
+/* optional but helps on iOS/flex overflow edge cases */
+.hero-splash__inner{
+  min-height: 0;
+}
+
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero Splash",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": { "groups": ["header"] },
+  "settings": [
+    { "type": "header", "content": "Background media" },
+    {
+      "type": "select",
+      "id": "bg_type",
+      "label": "Desktop background type",
+      "default": "video",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ]
+    },
+    { "type": "image_picker", "id": "bg_image", "label": "Desktop background image" },
+    { "type": "video", "id": "bg_video", "label": "Desktop background video" },
+
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_media",
+      "label": "Use different media on mobile",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "bg_type_mobile",
+      "label": "Mobile background type",
+      "default": "image",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ]
+    },
+    { "type": "image_picker", "id": "bg_image_mobile", "label": "Mobile background image" },
+    { "type": "video", "id": "bg_video_mobile", "label": "Mobile background video" },
+
+    { "type": "header", "content": "Layout" },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "default": "full",
+      "options": [
+        { "value": "full", "label": "Full screen" },
+        { "value": "large", "label": "Large" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "custom", "label": "Custom" },
+        { "value": "fit", "label": "Fit to image" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom height (svh)",
+      "min": 30,
+      "max": 120,
+      "step": 1,
+      "default": 80
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Content width",
+      "default": "page-width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "page-width--narrow", "label": "Narrow" },
+        { "value": "page-width--wide", "label": "Wide" },
+        { "value": "full-width", "label": "Full width" }
+      ]
+    },
+
+    {
+  "type": "checkbox",
+  "id": "custom_mobile_height",
+  "label": "Use different height on mobile",
+  "default": true
+},
+{
+  "type": "select",
+  "id": "section_height_mobile",
+  "label": "Mobile section height",
+  "default": "medium",
+  "options": [
+    { "value": "full", "label": "Full screen" },
+    { "value": "large", "label": "Large" },
+    { "value": "medium", "label": "Medium" },
+    { "value": "custom", "label": "Custom" },
+    { "value": "fit", "label": "Fit to image" }
+  ]
+},
+{
+  "type": "range",
+  "id": "custom_height_mobile",
+  "label": "Mobile custom height (svh)",
+  "min": 30,
+  "max": 120,
+  "step": 1,
+  "default": 75
+},
+
+    { "type": "header", "content": "Content alignment" },
+    {
+      "type": "select",
+      "id": "content_vertical",
+      "label": "Vertical align",
+      "default": "center",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "content_horizontal",
+      "label": "Horizontal align",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_x", "label": "Horizontal padding (px)", "min": 0, "max": 80, "step": 2, "default": 24 },
+    { "type": "range", "id": "padding_y", "label": "Vertical padding (px)", "min": 0, "max": 80, "step": 2, "default": 24 },
+    { "type": "range", "id": "bottom_safe_area", "label": "Bottom safe-area extra (px)", "min": 0, "max": 80, "step": 2, "default": 12 },
+
+    { "type": "header", "content": "Overlay" },
+    { "type": "checkbox", "id": "enable_overlay", "label": "Enable overlay", "default": true },
+    { "type": "range", "id": "overlay_opacity", "label": "Overlay opacity (%)", "min": 0, "max": 100, "step": 5, "default": 35 },
+    { "type": "color", "id": "overlay_color", "label": "Overlay color", "default": "#000000" },
+
+    { "type": "header", "content": "Text + buttons" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "New drop" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Hero headline" },
+    { "type": "richtext", "id": "subheading", "label": "Subheading", "default": "<p>Short supporting line goes here.</p>" },
+
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "label": "Heading size (desktop px)",
+      "min": 28,
+      "max": 128,
+      "step": 1,
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile px)",
+      "min": 22,
+      "max": 96,
+      "step": 1,
+      "default": 44
+    },
+
+    { "type": "header", "content": "Text protection" },
+    { "type": "range", "id": "text_shadow_opacity", "label": "Shadow opacity (%)", "min": 0, "max": 100, "step": 1, "default": 55 },
+    { "type": "range", "id": "text_shadow_blur", "label": "Shadow blur (px)", "min": 0, "max": 40, "step": 1, "default": 18 },
+    { "type": "range", "id": "text_shadow_y", "label": "Shadow Y offset (px)", "min": 0, "max": 14, "step": 1, "default": 3 },
+    { "type": "checkbox", "id": "enable_text_glow", "label": "Enable readability glow behind copy", "default": true },
+    { "type": "range", "id": "text_glow_opacity", "label": "Glow opacity (%)", "min": 0, "max": 100, "step": 1, "default": 38 },
+
+    { "type": "text", "id": "primary_label", "label": "Primary button label", "default": "Shop now" },
+    { "type": "url", "id": "primary_link", "label": "Primary button link" },
+    {
+      "type": "select",
+      "id": "primary_button_style",
+      "label": "Primary button style (theme)",
+      "default": "btn--primary",
+      "options": [
+        { "value": "btn--primary", "label": "Primary" },
+        { "value": "btn--secondary", "label": "Secondary" },
+        { "value": "btn--tertiary", "label": "Tertiary" },
+        { "value": "btn--link", "label": "Link" }
+      ]
+    },
+    { "type": "checkbox", "id": "primary_new_tab", "label": "Open primary in new tab", "default": false },
+
+    { "type": "header", "content": "Primary button custom style" },
+    { "type": "checkbox", "id": "primary_custom_enable", "label": "Use custom colors (primary)", "default": true },
+    { "type": "color", "id": "primary_custom_bg", "label": "Primary bg", "default": "#ffffff" },
+    { "type": "color", "id": "primary_custom_text", "label": "Primary text", "default": "#0b0b0b" },
+    { "type": "color", "id": "primary_custom_border", "label": "Primary border/ring", "default": "rgba(255,255,255,0.40)" },
+    { "type": "range", "id": "primary_custom_radius", "label": "Primary radius (px)", "min": 0, "max": 40, "step": 1, "default": 10 },
+
+    { "type": "text", "id": "secondary_label", "label": "Secondary button label", "default": "Learn more" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary button link" },
+    {
+      "type": "select",
+      "id": "secondary_button_style",
+      "label": "Secondary button style (theme)",
+      "default": "btn--secondary",
+      "options": [
+        { "value": "btn--primary", "label": "Primary" },
+        { "value": "btn--secondary", "label": "Secondary" },
+        { "value": "btn--tertiary", "label": "Tertiary" },
+        { "value": "btn--link", "label": "Link" }
+      ]
+    },
+    { "type": "checkbox", "id": "secondary_new_tab", "label": "Open secondary in new tab", "default": false },
+
+    { "type": "header", "content": "Secondary button custom style" },
+    { "type": "checkbox", "id": "secondary_custom_enable", "label": "Use custom colors (secondary)", "default": true },
+    { "type": "color", "id": "secondary_custom_bg", "label": "Secondary bg", "default": "rgba(0,0,0,0.45)" },
+    { "type": "color", "id": "secondary_custom_text", "label": "Secondary text", "default": "#ffffff" },
+    { "type": "color", "id": "secondary_custom_border", "label": "Secondary border/ring", "default": "rgba(255,255,255,0.35)" },
+    { "type": "range", "id": "secondary_custom_radius", "label": "Secondary radius (px)", "min": 0, "max": 40, "step": 1, "default": 10 },
+
+    { "type": "header", "content": "Bottom UI" },
+    { "type": "checkbox", "id": "show_social", "label": "Show social icons", "default": true },
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter signup", "default": true },
+
+    { "type": "text", "id": "newsletter_heading", "label": "Newsletter heading", "default": "Get updates" },
+    { "type": "text", "id": "email_placeholder", "label": "Email placeholder", "default": "Email address" },
+    { "type": "text", "id": "email_button_label", "label": "Email button label", "default": "Sign up" },
+    {
+      "type": "select",
+      "id": "newsletter_button_style",
+      "label": "Newsletter button style (theme)",
+      "default": "btn--primary",
+      "options": [
+        { "value": "btn--primary", "label": "Primary" },
+        { "value": "btn--secondary", "label": "Secondary" },
+        { "value": "btn--tertiary", "label": "Tertiary" },
+        { "value": "btn--link", "label": "Link" }
+      ]
+    },
+    { "type": "checkbox", "id": "newsletter_force_bg", "label": "Force newsletter button background", "default": true },
+    { "type": "color", "id": "newsletter_button_bg", "label": "Newsletter button bg (force mode)", "default": "#ffffff" },
+    { "type": "color", "id": "newsletter_button_text", "label": "Newsletter button text (force mode)", "default": "#0b0b0b" },
+    { "type": "color", "id": "newsletter_button_ring", "label": "Newsletter button ring (force mode)", "default": "rgba(255,255,255,0.40)" },
+    { "type": "range", "id": "newsletter_button_radius", "label": "Newsletter button radius (px)", "min": 0, "max": 40, "step": 1, "default": 8 },
+
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thanks for signing up!" },
+    { "type": "richtext", "id": "privacy_text", "label": "Privacy text", "default": "<p>No spam. Unsubscribe anytime.</p>" },
+
+    { "type": "header", "content": "Colors" },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "background-1" },
+
+    { "type": "color", "id": "text_color", "label": "Base text color", "default": "#ffffff" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#ffffff" },
+    { "type": "color", "id": "kicker_color", "label": "Kicker color", "default": "#ffffff" },
+    { "type": "color", "id": "subheading_color", "label": "Subheading color", "default": "#ffffff" },
+
+    { "type": "color", "id": "ui_color", "label": "UI color", "default": "#ffffff" },
+    { "type": "color", "id": "ui_border_color", "label": "UI border color", "default": "rgba(255,255,255,0.22)" },
+    { "type": "color", "id": "ui_bg_color", "label": "UI background color", "default": "rgba(0,0,0,0.30)" },
+    { "type": "range", "id": "ui_bg_opacity", "label": "UI background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 30 },
+    { "type": "range", "id": "ui_radius", "label": "UI corner radius (px)", "min": 0, "max": 30, "step": 1, "default": 14 },
+    { "type": "range", "id": "ui_gap", "label": "UI gap (px)", "min": 0, "max": 30, "step": 1, "default": 12 },
+
+    { "type": "header", "content": "Social icon styles" },
+    { "type": "color", "id": "social_icon_color", "label": "Icon color", "default": "#ff2a2a" },
+    { "type": "color", "id": "social_icon_hover_color", "label": "Icon hover color", "default": "#ffffff" },
+    { "type": "color", "id": "social_icon_bg", "label": "Icon background", "default": "rgba(0,0,0,0.35)" },
+    { "type": "range", "id": "social_icon_bg_opacity", "label": "Icon background opacity (%)", "min": 0, "max": 100, "step": 5, "default": 35 },
+    { "type": "color", "id": "social_icon_ring_color", "label": "Icon ring color", "default": "rgba(255,255,255,0.35)" }
+  ],
+  "blocks": [
+    {
+      "type": "social_media",
+      "name": "Social media links",
+      "settings": [
+        { "type": "url", "id": "facebook", "label": "Facebook" },
+        { "type": "url", "id": "instagram", "label": "Instagram" },
+        { "type": "url", "id": "youtube", "label": "YouTube" },
+        { "type": "url", "id": "tiktok", "label": "TikTok" },
+        { "type": "url", "id": "x", "label": "X (Twitter)" },
+        { "type": "url", "id": "spotify", "label": "Spotify" },
+        { "type": "url", "id": "apple_music", "label": "Apple Music" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Splash (social + email)",
+      "category": "Banners",
+      "blocks": [
+        { "type": "social_media" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

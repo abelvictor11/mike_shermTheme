@@ -1,0 +1,561 @@
+{% comment %}
+  Custom Header Section for Mike Sherm
+  - Desktop: Logo left, Menu center, Actions right
+  - Mobile: Logo center, Currency/Search left, Account/Cart right, Menu below
+{% endcomment %}
+
+<header-custom
+  id="header-custom"
+  class="header-custom"
+  {% if section.settings.enable_sticky %}
+    data-sticky="true"
+  {% endif %}
+>
+  <div class="header-custom__background">
+    <img 
+      src="{{ 'header-bg.webp' | asset_url }}" 
+      alt="" 
+      class="header-custom__bg-image"
+      loading="eager"
+    >
+  </div>
+  
+  <div class="header-custom__container">
+    {%- comment -%} Desktop Layout {%- endcomment -%}
+    <div class="header-custom__desktop">
+      {%- comment -%} Left: Logo {%- endcomment -%}
+      <div class="header-custom__logo">
+        <a href="{{ routes.root_url }}" class="header-custom__logo-link">
+          <div class="header-custom__logo-wrapper">
+            <span class="header-custom__logo-mike">MIKE</span>
+            <span class="header-custom__logo-sherm">SHERM</span>
+          </div>
+        </a>
+      </div>
+
+      {%- comment -%} Center: Navigation {%- endcomment -%}
+      <nav class="header-custom__nav" aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+        <ul class="header-custom__menu">
+          {% for link in section.settings.menu.links %}
+            <li class="header-custom__menu-item">
+              <a 
+                href="{{ link.url }}" 
+                class="header-custom__menu-link"
+                {% if link.current %}aria-current="page"{% endif %}
+              >
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      {%- comment -%} Right: Actions {%- endcomment -%}
+      <div class="header-custom__actions">
+        {%- comment -%} Currency Selector {%- endcomment -%}
+        {% if section.settings.show_currency %}
+          <div class="header-custom__currency">
+            <button type="button" class="header-custom__currency-btn">
+              {{ localization.country.currency.iso_code }}
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Search {%- endcomment -%}
+        {% if section.settings.show_search %}
+          <button 
+            type="button" 
+            class="header-custom__action-btn header-custom__search-btn"
+            aria-label="{{ 'accessibility.search' | t }}"
+            data-search-toggle
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        {% endif %}
+
+        {%- comment -%} Account {%- endcomment -%}
+        {% if shop.customer_accounts_enabled %}
+          <a 
+            href="{{ routes.account_url }}" 
+            class="header-custom__action-btn header-custom__account-btn"
+            aria-label="{{ 'accessibility.account' | t }}"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16.6667 17.5V15.8333C16.6667 14.9493 16.3155 14.1014 15.6904 13.4763C15.0653 12.8512 14.2174 12.5 13.3334 12.5H6.66671C5.78265 12.5 4.93481 12.8512 4.30968 13.4763C3.68456 14.1014 3.33337 14.9493 3.33337 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 9.16667C11.841 9.16667 13.3334 7.67428 13.3334 5.83333C13.3334 3.99238 11.841 2.5 10 2.5C8.15909 2.5 6.66671 3.99238 6.66671 5.83333C6.66671 7.67428 8.15909 9.16667 10 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {% endif %}
+
+        {%- comment -%} Cart {%- endcomment -%}
+        <a 
+          href="{{ routes.cart_url }}" 
+          class="header-custom__action-btn header-custom__cart-btn"
+          aria-label="{{ 'accessibility.cart' | t }}"
+        >
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 1L3 5V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V5L16 1H6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 5H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 9C15 10.0609 14.5786 11.0783 13.8284 11.8284C13.0783 12.5786 12.0609 13 11 13C9.93913 13 8.92172 12.5786 8.17157 11.8284C7.42143 11.0783 7 10.0609 7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {% if cart.item_count > 0 %}
+            <span class="header-custom__cart-count">{{ cart.item_count }}</span>
+          {% endif %}
+        </a>
+      </div>
+    </div>
+
+    {%- comment -%} Mobile Layout {%- endcomment -%}
+    <div class="header-custom__mobile">
+      {%- comment -%} Top Row: Currency/Search - Logo - Account/Cart {%- endcomment -%}
+      <div class="header-custom__mobile-top">
+        <div class="header-custom__mobile-left">
+          {% if section.settings.show_currency %}
+            <div class="header-custom__currency">
+              <button type="button" class="header-custom__currency-btn">
+                {{ localization.country.currency.iso_code }}
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          {% endif %}
+          
+          {% if section.settings.show_search %}
+            <button 
+              type="button" 
+              class="header-custom__action-btn header-custom__search-btn"
+              aria-label="{{ 'accessibility.search' | t }}"
+              data-search-toggle
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M19 19L14.65 14.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          {% endif %}
+        </div>
+
+        <div class="header-custom__mobile-center">
+          <a href="{{ routes.root_url }}" class="header-custom__logo-link">
+            <div class="header-custom__logo-wrapper header-custom__logo-wrapper--mobile">
+              <span class="header-custom__logo-mike">MIKE</span>
+              <span class="header-custom__logo-sherm">SHERM</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="header-custom__mobile-right">
+          {% if shop.customer_accounts_enabled %}
+            <a 
+              href="{{ routes.account_url }}" 
+              class="header-custom__action-btn header-custom__account-btn"
+              aria-label="{{ 'accessibility.account' | t }}"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.6667 17.5V15.8333C16.6667 14.9493 16.3155 14.1014 15.6904 13.4763C15.0653 12.8512 14.2174 12.5 13.3334 12.5H6.66671C5.78265 12.5 4.93481 12.8512 4.30968 13.4763C3.68456 14.1014 3.33337 14.9493 3.33337 15.8333V17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 9.16667C11.841 9.16667 13.3334 7.67428 13.3334 5.83333C13.3334 3.99238 11.841 2.5 10 2.5C8.15909 2.5 6.66671 3.99238 6.66671 5.83333C6.66671 7.67428 8.15909 9.16667 10 9.16667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          {% endif %}
+
+          <a 
+            href="{{ routes.cart_url }}" 
+            class="header-custom__action-btn header-custom__cart-btn"
+            aria-label="{{ 'accessibility.cart' | t }}"
+          >
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 1L3 5V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V5L16 1H6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 5H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 9C15 10.0609 14.5786 11.0783 13.8284 11.8284C13.0783 12.5786 12.0609 13 11 13C9.93913 13 8.92172 12.5786 8.17157 11.8284C7.42143 11.0783 7 10.0609 7 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {% if cart.item_count > 0 %}
+              <span class="header-custom__cart-count">{{ cart.item_count }}</span>
+            {% endif %}
+          </a>
+        </div>
+      </div>
+
+      {%- comment -%} Bottom Row: Navigation {%- endcomment -%}
+      <nav class="header-custom__mobile-nav" aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+        <ul class="header-custom__menu header-custom__menu--mobile">
+          {% for link in section.settings.menu.links %}
+            <li class="header-custom__menu-item">
+              <a 
+                href="{{ link.url }}" 
+                class="header-custom__menu-link"
+                {% if link.current %}aria-current="page"{% endif %}
+              >
+                {{ link.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header-custom>
+
+{% stylesheet %}
+  /* Header Custom Styles */
+  .header-custom {
+    --header-custom-height: auto;
+    --header-custom-padding: 1.25rem 2rem;
+    --header-custom-bg: transparent;
+    --header-custom-text: #ffffff;
+    --header-custom-accent: #c8ff00;
+    --header-custom-menu-font: 'Monument Extended', 'Arial Black', sans-serif;
+    --header-custom-menu-weight: 800;
+    --header-custom-menu-size: 1.125rem;
+    --header-custom-menu-spacing: 0.02em;
+    
+    position: relative;
+    z-index: var(--layer-overlay, 16);
+    width: 100%;
+  }
+
+  .header-custom__background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .header-custom__bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center bottom;
+  }
+
+  .header-custom__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--header-custom-padding);
+  }
+
+  /* Desktop Layout */
+  .header-custom__desktop {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .header-custom__desktop {
+      display: flex;
+    }
+    
+    .header-custom__mobile {
+      display: none;
+    }
+  }
+
+  /* Logo */
+  .header-custom__logo {
+    flex-shrink: 0;
+  }
+
+  .header-custom__logo-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  .header-custom__logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+
+  .header-custom__logo-mike {
+    font-family: var(--header-custom-menu-font);
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--header-custom-accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .header-custom__logo-sherm {
+    font-family: var(--header-custom-menu-font);
+    font-weight: 800;
+    font-size: 2rem;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--header-custom-accent);
+    text-stroke: 1.5px var(--header-custom-accent);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-style: italic;
+    transform: skewX(-5deg);
+    display: inline-block;
+  }
+
+  .header-custom__logo-wrapper--mobile .header-custom__logo-mike {
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .header-custom__logo-wrapper--mobile .header-custom__logo-sherm {
+    font-size: 1.75rem;
+  }
+
+  /* Navigation */
+  .header-custom__nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-custom__menu {
+    display: flex;
+    align-items: center;
+    gap: 3.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header-custom__menu-item {
+    margin: 0;
+    padding: 0;
+  }
+
+  .header-custom__menu-link {
+    font-family: var(--header-custom-menu-font);
+    font-weight: var(--header-custom-menu-weight);
+    font-size: var(--header-custom-menu-size);
+    letter-spacing: var(--header-custom-menu-spacing);
+    color: var(--header-custom-text);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity 0.2s ease;
+    padding: 0.5rem 0;
+    display: block;
+  }
+
+  .header-custom__menu-link:hover {
+    opacity: 0.8;
+  }
+
+  /* Actions */
+  .header-custom__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .header-custom__currency {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-custom__currency-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: none;
+    color: var(--header-custom-text);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .header-custom__currency-btn:hover {
+    opacity: 0.8;
+  }
+
+  .header-custom__currency-btn svg {
+    width: 10px;
+    height: 6px;
+  }
+
+  .header-custom__action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    color: var(--header-custom-text);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .header-custom__action-btn:hover {
+    opacity: 0.8;
+  }
+
+  .header-custom__action-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-custom__cart-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 20px;
+    height: 20px;
+    background-color: #ff3b30;
+    color: #ffffff;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* Mobile Layout */
+  .header-custom__mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 0;
+  }
+
+  @media screen and (min-width: 990px) {
+    .header-custom__mobile {
+      display: none;
+    }
+  }
+
+  .header-custom__mobile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+  }
+
+  .header-custom__mobile-left,
+  .header-custom__mobile-right {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: 90px;
+  }
+
+  .header-custom__mobile-right {
+    justify-content: flex-end;
+  }
+
+  .header-custom__mobile-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-custom__mobile-nav {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+  }
+
+  .header-custom__menu--mobile {
+    gap: 2.5rem;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 480px) {
+    .header-custom__menu--mobile {
+      gap: 1.5rem;
+    }
+    
+    .header-custom__menu--mobile .header-custom__menu-link {
+      font-size: 1rem;
+    }
+  }
+
+  /* Sticky Header */
+  .header-custom[data-sticky="true"] {
+    position: sticky;
+    top: 0;
+  }
+{% endstylesheet %}
+
+<script>
+  class HeaderCustom extends HTMLElement {
+    constructor() {
+      super();
+      this.init();
+    }
+
+    init() {
+      // Search toggle functionality
+      const searchBtns = this.querySelectorAll('[data-search-toggle]');
+      searchBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Trigger the search modal if it exists
+          const searchModal = document.querySelector('search-modal');
+          if (searchModal) {
+            searchModal.open();
+          }
+        });
+      });
+    }
+  }
+
+  if (!customElements.get('header-custom')) {
+    customElements.define('header-custom', HeaderCustom);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Header Custom",
+  "tag": "header",
+  "class": "header-custom-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency",
+      "label": "Show currency selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky header",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header Custom"
+    }
+  ]
+}
+{% endschema %}

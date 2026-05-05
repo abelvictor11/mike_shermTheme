@@ -1,0 +1,22 @@
+:root{
+  --nav-accent: #e10600;
+  --sticky-bg: #fff;
+}
+
+/* STICKY: background */
+header-component.header[data-sticky-state="active"]{
+  background: var(--sticky-bg) !important;
+}
+
+
+
+
+
+
+
+/* STICKY: active/current red */
+header-component.header[data-sticky-state="active"] a[aria-current="page"],
+header-component.header[data-sticky-state="active"] a[aria-current="true"],
+header-component.header[data-sticky-state="active"] a.active{
+  color: var(--nav-accent) !important;
+}

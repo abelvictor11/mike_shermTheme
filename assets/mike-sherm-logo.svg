@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <defs>
+    <style>
+      .mike-text {
+        font-family: 'Monument Extended', 'Arial Black', sans-serif;
+        font-weight: 800;
+        font-size: 18px;
+        fill: #c8ff00;
+        letter-spacing: 0.1em;
+      }
+      .sherm-text {
+        font-family: 'Monument Extended', 'Arial Black', sans-serif;
+        font-weight: 800;
+        font-size: 32px;
+        fill: none;
+        stroke: #c8ff00;
+        stroke-width: 1.5;
+        letter-spacing: 0.05em;
+        font-style: italic;
+      }
+    </style>
+  </defs>
+  <text x="10" y="25" class="mike-text">MIKE</text>
+  <text x="5" y="60" class="sherm-text">SHERM</text>
+</svg>
