@@ -247,6 +247,7 @@
     --header-custom-menu-size-mobile: {{ section.settings.menu_font_size_mobile }}px;
     --header-custom-menu-spacing: 0.02em;
     --header-custom-logo-width: {{ section.settings.logo_width }}px;
+    --header-custom-logo-width-mobile: {{ section.settings.logo_width_mobile }}px;
     
     position: relative;
     z-index: var(--layer-overlay, 100);
@@ -330,12 +331,15 @@
 
   .header-custom__logo-image {
     max-width: var(--header-custom-logo-width);
-    width: auto;
+    width: var(--header-custom-logo-width);
     height: auto;
   }
 
-  .header-custom__logo-image--mobile {
-    max-width: calc(var(--header-custom-logo-width) * 0.8);
+  @media screen and (max-width: 989px) {
+    .header-custom__logo-image {
+      max-width: var(--header-custom-logo-width-mobile);
+      width: var(--header-custom-logo-width-mobile);
+    }
   }
 
   .header-custom__logo-wrapper {
@@ -408,7 +412,7 @@
   .header-custom__menu-link {
     font-family: var(--header-custom-menu-font);
     font-weight: var(--header-custom-menu-weight);
-    font-size: var(--header-custom-menu-size);
+    font-size: var(--header-custom-menu-size-mobile);
     letter-spacing: var(--header-custom-menu-spacing);
     color: var(--header-custom-text);
     text-decoration: none;
@@ -416,6 +420,12 @@
     transition: opacity 0.2s ease;
     padding: 0.25rem 0;
     display: block;
+  }
+
+  @media screen and (min-width: 990px) {
+    .header-custom__menu-link {
+      font-size: var(--header-custom-menu-size);
+    }
   }
 
   .header-custom__menu-link:hover {
@@ -551,10 +561,6 @@
     justify-content: center;
   }
 
-  .header-custom__menu--mobile .header-custom__menu-link {
-    font-size: var(--header-custom-menu-size-mobile);
-  }
-
   @media screen and (max-width: 480px) {
     .header-custom__menu--mobile {
       gap: 1.5rem;
@@ -618,7 +624,17 @@
       "step": 10,
       "default": 120,
       "unit": "px",
-      "label": "Logo width"
+      "label": "Logo width (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "min": 40,
+      "max": 200,
+      "step": 10,
+      "default": 100,
+      "unit": "px",
+      "label": "Logo width (mobile)"
     },
     {
       "type": "header",
