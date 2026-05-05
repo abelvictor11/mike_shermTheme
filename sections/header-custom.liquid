@@ -1,12 +1,20 @@
 {% comment %}
   Custom Header Section for Mike Sherm
-  - Desktop: Logo left, Menu center, Actions right
+  - Desktop: Logo left, Menu + Actions right (menu below icons)
   - Mobile: Logo center, Currency/Search left, Account/Cart right, Menu below
+  - Transparent on homepage (absolute position over hero video)
 {% endcomment %}
+
+{%- liquid
+  assign is_homepage = false
+  if template.name == 'index'
+    assign is_homepage = true
+  endif
+-%}
 
 <header-custom
   id="header-custom"
-  class="header-custom"
+  class="header-custom{% if is_homepage %} header-custom--transparent{% endif %}"
   {% if section.settings.enable_sticky %}
     data-sticky="true"
   {% endif %}
@@ -26,32 +34,27 @@
       {%- comment -%} Left: Logo {%- endcomment -%}
       <div class="header-custom__logo">
         <a href="{{ routes.root_url }}" class="header-custom__logo-link">
-          <div class="header-custom__logo-wrapper">
-            <span class="header-custom__logo-mike">MIKE</span>
-            <span class="header-custom__logo-sherm">SHERM</span>
-          </div>
+          {% if section.settings.logo != blank %}
+            <img 
+              src="{{ section.settings.logo | image_url: width: 300 }}" 
+              alt="{{ shop.name }}"
+              class="header-custom__logo-image"
+              style="max-width: {{ section.settings.logo_width }}px;"
+              loading="eager"
+            >
+          {% else %}
+            <div class="header-custom__logo-wrapper">
+              <span class="header-custom__logo-mike">MIKE</span>
+              <span class="header-custom__logo-sherm">SHERM</span>
+            </div>
+          {% endif %}
         </a>
       </div>
 
-      {%- comment -%} Center: Navigation {%- endcomment -%}
-      <nav class="header-custom__nav" aria-label="{{ 'accessibility.header_navigation_label' | t }}">
-        <ul class="header-custom__menu">
-          {% for link in section.settings.menu.links %}
-            <li class="header-custom__menu-item">
-              <a 
-                href="{{ link.url }}" 
-                class="header-custom__menu-link"
-                {% if link.current %}aria-current="page"{% endif %}
-              >
-                {{ link.title }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      </nav>
-
-      {%- comment -%} Right: Actions {%- endcomment -%}
-      <div class="header-custom__actions">
+      {%- comment -%} Right: Actions + Navigation below {%- endcomment -%}
+      <div class="header-custom__right">
+        {%- comment -%} Top row: Actions {%- endcomment -%}
+        <div class="header-custom__actions">
         {%- comment -%} Currency Selector {%- endcomment -%}
         {% if section.settings.show_currency %}
           <div class="header-custom__currency">
@@ -108,6 +111,24 @@
             <span class="header-custom__cart-count">{{ cart.item_count }}</span>
           {% endif %}
         </a>
+        </div>
+
+        {%- comment -%} Bottom row: Navigation (desktop only) {%- endcomment -%}
+        <nav class="header-custom__nav" aria-label="{{ 'accessibility.header_navigation_label' | t }}">
+          <ul class="header-custom__menu">
+            {% for link in section.settings.menu.links %}
+              <li class="header-custom__menu-item">
+                <a 
+                  href="{{ link.url }}" 
+                  class="header-custom__menu-link"
+                  {% if link.current %}aria-current="page"{% endif %}
+                >
+                  {{ link.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
       </div>
     </div>
 
@@ -144,10 +165,20 @@
 
         <div class="header-custom__mobile-center">
           <a href="{{ routes.root_url }}" class="header-custom__logo-link">
-            <div class="header-custom__logo-wrapper header-custom__logo-wrapper--mobile">
-              <span class="header-custom__logo-mike">MIKE</span>
-              <span class="header-custom__logo-sherm">SHERM</span>
-            </div>
+            {% if section.settings.logo != blank %}
+              <img 
+                src="{{ section.settings.logo | image_url: width: 200 }}" 
+                alt="{{ shop.name }}"
+                class="header-custom__logo-image header-custom__logo-image--mobile"
+                style="max-width: {{ section.settings.logo_width | times: 0.8 }}px;"
+                loading="eager"
+              >
+            {% else %}
+              <div class="header-custom__logo-wrapper header-custom__logo-wrapper--mobile">
+                <span class="header-custom__logo-mike">MIKE</span>
+                <span class="header-custom__logo-sherm">SHERM</span>
+              </div>
+            {% endif %}
           </a>
         </div>
 
@@ -206,18 +237,30 @@
   /* Header Custom Styles */
   .header-custom {
     --header-custom-height: auto;
-    --header-custom-padding: 1.25rem 2rem;
+    --header-custom-padding: 1rem 2rem;
     --header-custom-bg: transparent;
     --header-custom-text: #ffffff;
     --header-custom-accent: #c8ff00;
     --header-custom-menu-font: 'Monument Extended', 'Arial Black', sans-serif;
     --header-custom-menu-weight: 800;
-    --header-custom-menu-size: 1.125rem;
+    --header-custom-menu-size: 1rem;
     --header-custom-menu-spacing: 0.02em;
     
     position: relative;
-    z-index: var(--layer-overlay, 16);
+    z-index: var(--layer-overlay, 100);
     width: 100%;
+  }
+
+  /* Transparent mode for homepage - absolute positioning over hero */
+  .header-custom--transparent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .header-custom--transparent .header-custom__background {
+    background: transparent;
   }
 
   .header-custom__background {
@@ -227,26 +270,27 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .header-custom__bg-image {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center bottom;
+    height: auto;
+    object-fit: contain;
+    object-position: center top;
   }
 
   .header-custom__container {
     max-width: 1400px;
     margin: 0 auto;
     padding: var(--header-custom-padding);
+    position: relative;
   }
 
   /* Desktop Layout */
   .header-custom__desktop {
     display: none;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 2rem;
   }
@@ -264,11 +308,22 @@
   /* Logo */
   .header-custom__logo {
     flex-shrink: 0;
+    padding-top: 0.5rem;
   }
 
   .header-custom__logo-link {
     display: block;
     text-decoration: none;
+  }
+
+  .header-custom__logo-image {
+    max-height: 60px;
+    width: auto;
+    height: auto;
+  }
+
+  .header-custom__logo-image--mobile {
+    max-height: 50px;
   }
 
   .header-custom__logo-wrapper {
@@ -310,17 +365,24 @@
     font-size: 1.75rem;
   }
 
+  /* Right section - Actions on top, Menu below */
+  .header-custom__right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
   /* Navigation */
   .header-custom__nav {
-    flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
   }
 
   .header-custom__menu {
     display: flex;
     align-items: center;
-    gap: 3.5rem;
+    gap: 2.5rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -340,7 +402,7 @@
     text-decoration: none;
     text-transform: uppercase;
     transition: opacity 0.2s ease;
-    padding: 0.5rem 0;
+    padding: 0.25rem 0;
     display: block;
   }
 
@@ -528,10 +590,37 @@
   "class": "header-custom-section",
   "settings": [
     {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 120,
+      "unit": "px",
+      "label": "Logo width"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
       "type": "link_list",
       "id": "menu",
       "label": "Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "Header actions"
     },
     {
       "type": "checkbox",
