@@ -34,6 +34,7 @@
         "bg_video": "shopify://files/videos/herovideo-mike.mp4",
         "custom_mobile_media": false,
         "bg_type_mobile": "video",
+        "bg_video_mobile": "shopify://files/videos/herovideo-mike.mp4",
         "section_height": "fit",
         "custom_height": 75,
         "section_width": "page-width",
