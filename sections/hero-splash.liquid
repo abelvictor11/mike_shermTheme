@@ -158,6 +158,7 @@
     --hero-btn-secondary-border: {{ section.settings.secondary_custom_border }};
 
     --hero-bottom-safe: {{ section.settings.bottom_safe_area }}px;
+    --hero-overlay-img-position: {{ section.settings.overlay_image_position }};
   "
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -166,6 +167,34 @@
   <div class="hero-splash__media" aria-hidden="true">
     {% if section.settings.enable_overlay %}
       <div class="hero-splash__overlay"></div>
+    {% endif %}
+
+    {%- comment -%} Image overlay (PNG on top of video/image) {%- endcomment -%}
+    {% if section.settings.enable_image_overlay and section.settings.overlay_image != blank %}
+      <div class="hero-splash__image-overlay" style="--overlay-img-opacity: {{ section.settings.overlay_image_opacity | divided_by: 100.0 }};">
+        {{
+          section.settings.overlay_image
+          | image_url: width: 3840
+          | image_tag:
+            class: 'hero-splash__image-overlay-img hero-splash__image-overlay-img--desktop',
+            alt: '',
+            sizes: '100vw',
+            widths: '832,1200,1600,1920,2560,3840',
+            loading: 'eager'
+        }}
+        {% if section.settings.overlay_image_mobile != blank %}
+          {{
+            section.settings.overlay_image_mobile
+            | image_url: width: 1800
+            | image_tag:
+              class: 'hero-splash__image-overlay-img hero-splash__image-overlay-img--mobile',
+              alt: '',
+              sizes: '100vw',
+              widths: '416,600,800,1200,1600,1800',
+              loading: 'eager'
+          }}
+        {% endif %}
+      </div>
     {% endif %}
 
     {%- comment -%} Desktop background {%- endcomment -%}
@@ -428,6 +457,42 @@
   pointer-events:none;
 }
 
+/* Image overlay (PNG on top of video/image) */
+.hero-splash__image-overlay{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: var(--overlay-img-opacity, 1);
+}
+
+.hero-splash__image-overlay-img{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--hero-overlay-img-position, cover);
+  object-position: center;
+}
+
+/* Position variants */
+.hero-splash[style*="--hero-overlay-img-position: top"] .hero-splash__image-overlay-img{
+  object-fit: contain;
+  object-position: top center;
+}
+.hero-splash[style*="--hero-overlay-img-position: center"] .hero-splash__image-overlay-img{
+  object-fit: contain;
+  object-position: center center;
+}
+.hero-splash[style*="--hero-overlay-img-position: bottom"] .hero-splash__image-overlay-img{
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+.hero-splash__image-overlay-img--mobile{
+  display: none;
+}
+
 /* Default background behavior (cover) */
 .hero-splash__image,
 .hero-splash__video-el{
@@ -443,7 +508,7 @@
 .hero-splash__image--mobile,
 .hero-splash__video--mobile{ display:none; }
 
-.hero-splash__content{ position:relative; z-index:3; min-height: inherit; display:flex; }
+.hero-splash__content{ position:relative; z-index:5; min-height: inherit; display:flex; }
 
 .hero-splash__inner{
   width:100%;
@@ -484,7 +549,7 @@
 .hero-splash--fit .hero-splash__content{
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 5;
   min-height: 100%;
 }
 
@@ -498,7 +563,7 @@
 .hero-splash--fit .hero-splash__content{
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 5;
   display: flex;
   min-height: 100%;
   margin: 0;          /* important if theme adds margins */
@@ -859,6 +924,10 @@
 
   .hero-splash__image--mobile,
   .hero-splash__video--mobile{ display:block; }
+
+  /* Image overlay mobile */
+  .hero-splash__image-overlay-img--desktop{ display:none; }
+  .hero-splash__image-overlay-img--mobile{ display:block; }
 }
 
 /* --- HARD FORCE: overlay content on top of the fit-to-image media --- */
@@ -869,7 +938,7 @@
 .hero-splash--fit .hero-splash__content{
   position: absolute !important;
   top: 0; right: 0; bottom: 0; left: 0;
-  z-index: 3 !important;
+  z-index: 5 !important;
   min-height: 100% !important;
   display: flex;
 }
@@ -1045,9 +1114,28 @@
     { "type": "range", "id": "bottom_safe_area", "label": "Bottom safe-area extra (px)", "min": 0, "max": 80, "step": 2, "default": 12 },
 
     { "type": "header", "content": "Overlay" },
-    { "type": "checkbox", "id": "enable_overlay", "label": "Enable overlay", "default": true },
+    { "type": "checkbox", "id": "enable_overlay", "label": "Enable color overlay", "default": true },
     { "type": "range", "id": "overlay_opacity", "label": "Overlay opacity (%)", "min": 0, "max": 100, "step": 5, "default": 35 },
     { "type": "color", "id": "overlay_color", "label": "Overlay color", "default": "#000000" },
+
+    { "type": "header", "content": "Image overlay (PNG)" },
+    { "type": "checkbox", "id": "enable_image_overlay", "label": "Enable image overlay", "default": false, "info": "Add a PNG image on top of the video/image background" },
+    { "type": "image_picker", "id": "overlay_image", "label": "Overlay image (PNG recommended)" },
+    { "type": "image_picker", "id": "overlay_image_mobile", "label": "Overlay image mobile (optional)" },
+    {
+      "type": "select",
+      "id": "overlay_image_position",
+      "label": "Overlay image position",
+      "default": "cover",
+      "options": [
+        { "value": "cover", "label": "Cover (fill)" },
+        { "value": "contain", "label": "Contain (fit)" },
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ]
+    },
+    { "type": "range", "id": "overlay_image_opacity", "label": "Overlay image opacity (%)", "min": 10, "max": 100, "step": 5, "default": 100 },
 
     { "type": "header", "content": "Text + buttons" },
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "New drop" },
