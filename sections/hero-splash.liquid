@@ -257,6 +257,33 @@
             widths: '416,600,800,1200,1600,1800',
             fetchpriority: fetch_priority
         }}
+      {% else %}
+        {%- comment -%} Fallback: use desktop video on mobile if no mobile media set {%- endcomment -%}
+        {% if has_bg_video %}
+          <div class="hero-splash__video hero-splash__video--mobile">
+            {{
+              section.settings.bg_video
+              | video_tag:
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true,
+                class: 'hero-splash__video-el'
+            }}
+          </div>
+        {% elsif has_bg_image %}
+          {{
+            section.settings.bg_image
+            | image_url: width: 1800
+            | image_tag:
+              alt: section.settings.bg_image.alt,
+              class: 'hero-splash__image hero-splash__image--mobile',
+              sizes: '100vw',
+              widths: '416,600,800,1200,1600,1800',
+              fetchpriority: fetch_priority
+          }}
+        {% endif %}
       {% endif %}
     {% endif %}
   </div>
