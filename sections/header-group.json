@@ -15,8 +15,10 @@
       "type": "header-custom",
       "settings": {
         "logo": "shopify://shop_images/logo.webp",
-        "logo_width": 290,
+        "logo_width": 250,
         "menu": "main-menu",
+        "menu_font_size": 18,
+        "menu_font_size_mobile": 14,
         "show_currency": true,
         "show_search": true,
         "enable_sticky": false
