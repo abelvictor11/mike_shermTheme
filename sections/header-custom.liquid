@@ -28,14 +28,18 @@
     data-sticky="true"
   {% endif %}
 >
+  {% if section.settings.bg_image != blank %}
   <div class="header-custom__background">
     <img 
-      src="{{ 'header-bg.webp' | asset_url }}" 
+      src="{{ section.settings.bg_image | image_url: width: 1920 }}" 
       alt="" 
       class="header-custom__bg-image"
       loading="eager"
+      width="1920"
+      height="auto"
     >
   </div>
+  {% endif %}
   
   <div class="header-custom__container">
     {%- comment -%} Desktop Layout {%- endcomment -%}
@@ -64,14 +68,35 @@
         {%- comment -%} Top row: Actions {%- endcomment -%}
         <div class="header-custom__actions">
         {%- comment -%} Currency Selector {%- endcomment -%}
-        {% if section.settings.show_currency %}
+        {% if section.settings.show_currency and localization.available_countries.size > 1 %}
           <div class="header-custom__currency">
-            <button type="button" class="header-custom__currency-btn">
+            <localization-form>
+              {% form 'localization' %}
+                <div class="header-custom__currency-dropdown">
+                  <button type="button" class="header-custom__currency-btn" aria-expanded="false" aria-controls="currency-dropdown-desktop">
+                    {{ localization.country.currency.iso_code }}
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                  <ul id="currency-dropdown-desktop" class="header-custom__currency-list" hidden>
+                    {% for country in localization.available_countries %}
+                      <li>
+                        <button type="submit" name="country_code" value="{{ country.iso_code }}" class="header-custom__currency-option{% if country.iso_code == localization.country.iso_code %} active{% endif %}">
+                          {{ country.currency.iso_code }} - {{ country.name }}
+                        </button>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endform %}
+            </localization-form>
+          </div>
+        {% elsif section.settings.show_currency %}
+          <div class="header-custom__currency">
+            <span class="header-custom__currency-btn" style="cursor: default;">
               {{ localization.country.currency.iso_code }}
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+            </span>
           </div>
         {% endif %}
 
@@ -145,14 +170,35 @@
       {%- comment -%} Top Row: Currency/Search - Logo - Account/Cart {%- endcomment -%}
       <div class="header-custom__mobile-top">
         <div class="header-custom__mobile-left">
-          {% if section.settings.show_currency %}
+          {% if section.settings.show_currency and localization.available_countries.size > 1 %}
             <div class="header-custom__currency">
-              <button type="button" class="header-custom__currency-btn">
+              <localization-form>
+                {% form 'localization' %}
+                  <div class="header-custom__currency-dropdown">
+                    <button type="button" class="header-custom__currency-btn" aria-expanded="false" aria-controls="currency-dropdown-mobile">
+                      {{ localization.country.currency.iso_code }}
+                      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <ul id="currency-dropdown-mobile" class="header-custom__currency-list" hidden>
+                      {% for country in localization.available_countries %}
+                        <li>
+                          <button type="submit" name="country_code" value="{{ country.iso_code }}" class="header-custom__currency-option{% if country.iso_code == localization.country.iso_code %} active{% endif %}">
+                            {{ country.currency.iso_code }} - {{ country.name }}
+                          </button>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endform %}
+              </localization-form>
+            </div>
+          {% elsif section.settings.show_currency %}
+            <div class="header-custom__currency">
+              <span class="header-custom__currency-btn" style="cursor: default;">
                 {{ localization.country.currency.iso_code }}
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
+              </span>
             </div>
           {% endif %}
           
@@ -575,6 +621,56 @@
     position: sticky;
     top: 0;
   }
+
+  /* Currency Dropdown */
+  .header-custom__currency-dropdown {
+    position: relative;
+  }
+
+  .header-custom__currency-list {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 200px;
+    background: var(--color-background, #000);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 8px 0;
+    list-style: none;
+    margin: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .header-custom__currency-list[hidden] {
+    display: none;
+  }
+
+  .header-custom__currency-list li {
+    margin: 0;
+  }
+
+  .header-custom__currency-option {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: var(--color-foreground, #fff);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .header-custom__currency-option:hover,
+  .header-custom__currency-option.active {
+    background: rgba(200, 255, 0, 0.2);
+  }
+
+  localization-form {
+    display: contents;
+  }
 {% endstylesheet %}
 
 <script>
@@ -590,11 +686,47 @@
       searchBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           // Trigger the search modal if it exists
-          const searchModal = document.querySelector('search-modal');
-          if (searchModal) {
+          const searchModal = document.querySelector('#search-modal');
+          if (searchModal && searchModal.open) {
             searchModal.open();
           }
         });
+      });
+
+      // Currency dropdown toggle
+      const currencyBtns = this.querySelectorAll('.header-custom__currency-btn[aria-expanded]');
+      currencyBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          const listId = btn.getAttribute('aria-controls');
+          const list = document.getElementById(listId);
+          
+          // Close other dropdowns
+          currencyBtns.forEach(otherBtn => {
+            if (otherBtn !== btn) {
+              otherBtn.setAttribute('aria-expanded', 'false');
+              const otherListId = otherBtn.getAttribute('aria-controls');
+              const otherList = document.getElementById(otherListId);
+              if (otherList) otherList.hidden = true;
+            }
+          });
+          
+          // Toggle current dropdown
+          btn.setAttribute('aria-expanded', !expanded);
+          if (list) list.hidden = expanded;
+        });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.header-custom__currency-dropdown')) {
+          currencyBtns.forEach(btn => {
+            btn.setAttribute('aria-expanded', 'false');
+            const listId = btn.getAttribute('aria-controls');
+            const list = document.getElementById(listId);
+            if (list) list.hidden = true;
+          });
+        }
       });
     }
   }
@@ -690,6 +822,16 @@
       "id": "enable_sticky",
       "label": "Enable sticky header",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Header background image",
+      "info": "Recommended: 1920px wide. If empty, header will have no background image."
     }
   ],
   "presets": [
