@@ -687,8 +687,8 @@
         btn.addEventListener('click', () => {
           // Trigger the search modal if it exists
           const searchModal = document.querySelector('#search-modal');
-          if (searchModal && searchModal.open) {
-            searchModal.open();
+          if (searchModal && searchModal.showDialog) {
+            searchModal.showDialog();
           }
         });
       });
