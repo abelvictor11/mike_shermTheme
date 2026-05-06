@@ -29,14 +29,17 @@
   {% endif %}
 >
   {% if section.settings.bg_image != blank %}
-  <div class="header-custom__background">
+  <div class="header-custom__background" style="min-height: 70px;">
     <img 
       src="{{ section.settings.bg_image | image_url: width: 1920 }}" 
       alt="" 
       class="header-custom__bg-image"
       loading="eager"
+      fetchpriority="high"
+      decoding="async"
       width="1920"
-      height="auto"
+      height="200"
+      style="min-height: 70px;"
     >
   </div>
   {% endif %}
