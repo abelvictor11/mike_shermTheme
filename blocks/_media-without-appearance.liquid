@@ -64,14 +64,31 @@
     {
       "type": "select",
       "id": "image_position",
-      "label": "t:settings.image_position",
+      "label": "Image position (desktop)",
       "options": [
         {
           "value": "cover",
           "label": "t:options.cover"
         },
         {
-          "value": "contain ",
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover",
+      "visible_if": "{{ block.settings.media_type == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "image_position_mobile",
+      "label": "Image position (mobile)",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
           "label": "t:options.contain"
         }
       ],

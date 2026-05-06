@@ -1,19 +1,10 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "current": {
-    "logo": "shopify://shop_images/MS_Blk_Logo.png",
-    "logo_inverse": "shopify://shop_images/MS_Blk_Logo_1fe8c686-f013-4f71-8310-66b7daf2ce9a.png",
+    "logo": "",
+    "logo_inverse": "",
     "logo_height": 75,
     "logo_height_mobile": 40,
-    "favicon": "shopify://shop_images/MS_Favi_bea0a4aa-806e-4158-a3d4-755771cb0233.png",
+    "favicon": "",
     "type_body_font": "inter_n4",
     "type_subheading_font": "inter_n5",
     "type_heading_font": "inter_n7",

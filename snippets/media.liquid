@@ -33,6 +33,7 @@
     {% render 'border-override', settings: block_settings %}
     {% render 'spacing-style', settings: block_settings %}
     --image-position: {{ block_settings.image_position }};
+    --image-position-mobile: {{ block_settings.image_position_mobile | default: block_settings.image_position }};
     --video-position: {{ block_settings.video_position }};
   "
   {{ block.shopify_attributes }}
@@ -89,13 +90,14 @@
 
   .media-block__media {
     height: var(--media-height-mobile, auto);
-    object-fit: var(--image-position, 'cover');
+    object-fit: var(--image-position-mobile, var(--image-position, 'cover'));
     object-position: center center;
     width: 100%;
 
     @media screen and (min-width: 750px) {
       height: 100%;
       position: absolute;
+      object-fit: var(--image-position, 'cover');
     }
   }
 
