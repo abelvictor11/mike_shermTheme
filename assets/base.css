@@ -4944,9 +4944,3 @@ product-recommendations:has([data-has-recommendations='false']) {
     translate: 0px var(--atc-destination, 0px);
   }
 }
-.header-custom:not(.header-custom--transparent) .header-custom__background {
-    height: 100%;
-    max-height: 200px;
-    min-height: auto !important;
-    position: absolute;
-}
