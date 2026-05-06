@@ -322,7 +322,9 @@
   /* Ensure background is visible on internal pages */
   .header-custom:not(.header-custom--transparent) .header-custom__background {
     height: 100%;
-    min-height: 70px;
+    max-height: 200px;
+    min-height: auto;
+    position: absolute;
   }
 
   .header-custom__background {
