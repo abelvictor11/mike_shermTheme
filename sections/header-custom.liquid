@@ -350,9 +350,8 @@
     
     .header-custom__bg-image {
       z-index: 0;
-      /* Show full image without cropping on mobile */
-      object-fit: contain;
-      object-position: center top;
+      /* Force image to fill on mobile */
+      min-height: 100%;
     }
   }
 
