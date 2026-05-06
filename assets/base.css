@@ -4945,7 +4945,7 @@ product-recommendations:has([data-has-recommendations='false']) {
   }
 }
 .header-custom:not(.header-custom--transparent) .header-custom__background {
-    height: 100% !important;
+    height: 100%;
     max-height: 200px !important;
     position: absolute;
 }
