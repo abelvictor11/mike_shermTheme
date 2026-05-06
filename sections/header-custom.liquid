@@ -298,9 +298,13 @@
     --header-custom-menu-weight: 800;
     --header-custom-menu-spacing: 0.02em;
     
-    position: relative;
     z-index: var(--layer-overlay, 100);
     width: 100%;
+  }
+
+  /* Fix for internal pages - add position context for background */
+  .header-custom:not(.header-custom--transparent) {
+    position: relative;
   }
 
   /* Transparent mode for homepage - absolute positioning over hero */
@@ -313,6 +317,12 @@
 
   .header-custom--transparent .header-custom__background {
     background: transparent;
+  }
+
+  /* Ensure background is visible on internal pages */
+  .header-custom:not(.header-custom--transparent) .header-custom__background {
+    height: 100%;
+    min-height: 70px;
   }
 
   .header-custom__background {
