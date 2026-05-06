@@ -22,7 +22,8 @@
         "menu_font_size_mobile": 14,
         "show_currency": true,
         "show_search": true,
-        "enable_sticky": false
+        "enable_sticky": false,
+        "bg_image": "shopify://shop_images/header-bg.webp"
       }
     }
   },
