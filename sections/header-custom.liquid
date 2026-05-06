@@ -321,8 +321,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: -1;
+    z-index: 0;
     overflow: hidden;
+    pointer-events: none;
   }
 
   .header-custom__bg-image {
@@ -333,6 +334,25 @@
     height: 100%;
     object-fit: cover;
     object-position: center bottom;
+    z-index: 0;
+  }
+
+  /* Ensure background is visible on all pages including mobile */
+  .header-custom {
+    min-height: 60px;
+    background: transparent;
+  }
+
+  @media screen and (max-width: 989px) {
+    .header-custom__background {
+      z-index: 0;
+    }
+    
+    .header-custom__bg-image {
+      z-index: 0;
+      /* Force image to fill on mobile */
+      min-height: 100%;
+    }
   }
 
   .header-custom__container {
